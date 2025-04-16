@@ -4,8 +4,27 @@
 #include <string>
 #include <thread>
 #include <atomic>
+#include <cstdio>
+#include <termios.h>
+#include <unistd.h>
 
 using namespace chat;
+
+// 获取单个字符输入
+char getch() {
+    struct termios old_settings, new_settings;
+    char ch;
+    
+    tcgetattr(STDIN_FILENO, &old_settings);
+    new_settings = old_settings;
+    new_settings.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &new_settings);
+    
+    ch = getchar();
+    
+    tcsetattr(STDIN_FILENO, TCSANOW, &old_settings);
+    return ch;
+}
 
 /**
  * @brief 主函数
@@ -37,8 +56,13 @@ int main(int argc, char* argv[]) {
     ChatClient client(username);
     
     // 设置消息处理回调
-    client.setMessageCallback([](const Message& msg) {
-        std::cout << msg.toString() << std::endl;
+    client.setMessageCallback([username](const Message& msg) {
+        // 只有当消息不是自己发送的时才显示
+        if (msg.username != username) {
+            std::cout << msg.toString() << std::endl;
+            std::cout << "💬: ";  // 重新显示输入提示
+            std::cout.flush();
+        }
     });
     
     // 构建服务器URI并连接
@@ -52,7 +76,26 @@ int main(int argc, char* argv[]) {
     
     // 处理用户输入
     std::string input;
-    while (std::getline(std::cin, input)) {
+    while (true) {
+        std::cout << "💬: ";  // 显示输入提示
+        std::cout.flush();
+        
+        input.clear();
+        char ch;
+        while ((ch = getch()) != '\n') {
+            if (ch == '\b') {  // 退格键
+                if (!input.empty()) {
+                    input.pop_back();
+                    std::cout << "\b \b";  // 删除一个字符
+                }
+            } else {
+                input += ch;
+                std::cout << ch;
+            }
+            std::cout.flush();
+        }
+        std::cout << std::endl;
+        
         // 检查退出命令
         if (input == "\\quit" || input == "\\exit") {
             break;
@@ -61,6 +104,11 @@ int main(int argc, char* argv[]) {
         // 发送非空消息
         if (!input.empty()) {
             client.send(input);
+            // 不在这里显示输入提示，因为消息处理回调会处理
+        } else {
+            // 如果消息为空，重新显示输入提示
+            std::cout << "💬: ";
+            std::cout.flush();
         }
     }
     

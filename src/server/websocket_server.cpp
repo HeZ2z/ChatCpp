@@ -129,6 +129,10 @@ void ChatServer::onClose(ConnectionHdl hdl) {
 void ChatServer::onMessage(ConnectionHdl hdl, WebSocketServer::message_ptr msg) {
     try {
         Message message = Message::fromString(msg->get_payload());
+        
+        // 打印接收到的消息
+        std::cout << "\n[新消息] " << message.username << ": " << message.content << std::endl;
+        
         if (messageCallback) {
             messageCallback(message);
         }

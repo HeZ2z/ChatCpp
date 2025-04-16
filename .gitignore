@@ -30,3 +30,19 @@
 *.exe
 *.out
 *.app
+
+# Build files
+build/
+
+# CMake files
+CMakeLists.txt
+cmake_install.cmake
+Makefile
+
+# Cursor files
+.cursorrules
+
+# Cursor settings
+.cursorignore
+
+

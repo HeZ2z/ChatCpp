@@ -34,8 +34,18 @@ struct Message {
      * @brief 从字符串解析消息
      * @param str 格式化的消息字符串
      * @return 解析后的Message对象
+     * @throw std::runtime_error 当字符串格式不正确时抛出异常
      */
     static Message fromString(const std::string& str);
+
+    /**
+     * @brief 更新消息内容
+     * @param new_content 新的消息内容
+     */
+    void setContent(const std::string& new_content) {
+        content = new_content;
+        timestamp = std::time(nullptr);
+    }
 };
 
 } // namespace chat 

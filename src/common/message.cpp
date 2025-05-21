@@ -31,23 +31,36 @@ std::string Message::toString() const {
  * @throw std::runtime_error 当字符串格式不正确时抛出异常
  */
 Message Message::fromString(const std::string& str) {
+    // 验证基本格式
+    if (str.empty() || str.find('@') == std::string::npos || str.find('|') == std::string::npos) {
+        throw std::runtime_error("Invalid message format: missing required separators");
+    }
+
     std::stringstream ss(str);
     std::string username, content, timeStr;
-    std::string temp;
     
     // 解析用户名（@符号前的部分）
     std::getline(ss, username, '@');
+    if (username.empty()) {
+        throw std::runtime_error("Invalid message format: empty username");
+    }
     // 去除用户名前后的空白字符
     username = username.substr(0, username.find_last_not_of(" \t") + 1);
     
     // 解析消息内容（@和|之间的部分）
     std::getline(ss, content, '|');
+    if (content.empty()) {
+        throw std::runtime_error("Invalid message format: empty content");
+    }
     // 去除内容前后的空白字符
     content = content.substr(content.find_first_not_of(" \t"), 
                            content.find_last_not_of(" \t") - content.find_first_not_of(" \t") + 1);
     
     // 解析时间戳（|后的部分）
     std::getline(ss, timeStr);
+    if (timeStr.empty()) {
+        throw std::runtime_error("Invalid message format: empty timestamp");
+    }
     timeStr = timeStr.substr(timeStr.find_first_not_of(" \t"));
     
     // 创建消息对象
@@ -57,6 +70,9 @@ Message Message::fromString(const std::string& str) {
     std::tm tm = {};
     std::stringstream timeStream(timeStr);
     timeStream >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
+    if (timeStream.fail()) {
+        throw std::runtime_error("Invalid message format: invalid timestamp format");
+    }
     msg.timestamp = std::mktime(&tm);
     
     return msg;

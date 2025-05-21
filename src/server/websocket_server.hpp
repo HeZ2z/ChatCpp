@@ -59,6 +59,12 @@ public:
      */
     void setMessageCallback(std::function<void(const Message&)> callback);
 
+    /**
+     * @brief 检查服务器是否正在运行
+     * @return 如果服务器正在运行返回true，否则返回false
+     */
+    bool isRunning() const { return running; }
+
 private:
     /**
      * @brief 处理新的客户端连接

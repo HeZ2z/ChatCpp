@@ -30,7 +30,7 @@ public:
      * @brief 构造函数
      * @param port 服务器监听端口
      */
-    ChatServer(uint16_t port = 8080);
+    ChatServer(uint16_t port = 10808);
 
     /**
      * @brief 析构函数

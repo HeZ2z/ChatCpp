@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
     // 解析命令行参数
     std::string username = argv[1];
     std::string serverIp = (argc > 2) ? argv[2] : "127.0.0.1";
-    uint16_t port = (argc > 3) ? static_cast<uint16_t>(std::stoi(argv[3])) : 8080;
+    uint16_t port = (argc > 3) ? static_cast<uint16_t>(std::stoi(argv[3])) : 10808;
     
     // 初始化日志系统
     Logger::getInstance().setLogFile("chat_client.log");

@@ -55,7 +55,7 @@ void saveHistory(const std::string& filename, const Message& message) {
  */
 int main(int argc, char* argv[]) {
     // 解析命令行参数
-    uint16_t port = 8080;
+    uint16_t port = 10808;
     if (argc > 1) {
         port = static_cast<uint16_t>(std::stoi(argv[1]));
     }

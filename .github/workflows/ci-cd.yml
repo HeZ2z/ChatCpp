@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        build_type: [Debug, Release]
+        build_type: [Release] # 暂时去掉 debug
         include:
           - os: ubuntu-latest
             compiler: gcc

@@ -133,33 +133,20 @@ jobs:
         name: test-results-ubuntu-latest-Release
         path: ./test-results
 
-    - name: Import test results to Xray
+    - name: Upload test results to Xray via API
       run: |
         # Find the latest Xray report
         XRAY_REPORT=$(find test-results -name "xray_report_*.json" -type f -printf '%T+ %p\n' | sort | tail -n 1 | cut -d' ' -f2-)
 
         if [ -n "$XRAY_REPORT" ]; then
-          # Use Docker to run Xray CLI
-          docker run --rm \
-            -v "$(pwd):/workspace" \
-            -w /workspace \
-            -e XRAY_CLIENT_ID="${{ secrets.XRAY_CLIENT_ID }}" \
-            -e XRAY_CLIENT_SECRET="${{ secrets.XRAY_CLIENT_SECRET }}" \
-            --entrypoint /bin/bash \
-            ubuntu:20.04 \
-            -c "
-              apt-get update && \
-              apt-get install -y curl jq && \
-              curl -L https://xray.cloud.xpand-it.com/binaries/xray-cli-linux-amd64.tar.gz -o xray-cli.tar.gz && \
-              tar -xzf xray-cli.tar.gz && \
-              chmod +x xray && \
-              ./xray import-results \
-                --client-id \$XRAY_CLIENT_ID \
-                --client-secret \$XRAY_CLIENT_SECRET \
-                --project-key CHATCPP \
-                --format json \
-                --file \"$XRAY_REPORT\"
-            "
+          echo "Found Xray report: $XRAY_REPORT"
+          curl -H "Content-Type: application/json" \
+               -u "${{ secrets.XRAY_CLIENT_ID }}:${{ secrets.XRAY_CLIENT_SECRET }}" \
+               -X POST \
+               -d "@$XRAY_REPORT" \
+               "https://xray.cloud.getxray.app/api/v2/import/execution"
+        else
+          echo "No Xray report found, skipping upload"
         fi
       env:
         XRAY_CLIENT_ID: ${{ secrets.XRAY_CLIENT_ID }}

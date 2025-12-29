@@ -27,6 +27,23 @@ option(ENABLE_MEMORY_LEAK_TEST "Enable intentional memory leak for testing Valgr
 find_package(OpenSSL QUIET)  # OpenSSL库，用于WebSocket的加密通信 (optional)
 find_package(Threads REQUIRED)  # 线程库，用于多线程支持
 
+# 查找websocketpp (使用pkg-config或手动查找)
+find_package(PkgConfig)
+if(PKG_CONFIG_FOUND)
+    pkg_check_modules(WEBSOCKETPP websocketpp)
+endif()
+
+if(NOT WEBSOCKETPP_FOUND)
+    # 如果pkg-config找不到，尝试手动查找websocketpp头文件
+    find_path(WEBSOCKETPP_INCLUDE_DIR websocketpp/server.hpp
+        PATHS /usr/include /usr/local/include
+        PATH_SUFFIXES websocketpp)
+    if(WEBSOCKETPP_INCLUDE_DIR)
+        set(WEBSOCKETPP_FOUND TRUE)
+        set(WEBSOCKETPP_INCLUDE_DIRS ${WEBSOCKETPP_INCLUDE_DIR})
+    endif()
+endif()
+
 # 添加 Google Test
 include(FetchContent)
 FetchContent_Declare(
@@ -53,9 +70,20 @@ set(CLIENT_SOURCES
     src/common/logger.cpp        # 日志记录
 )
 
-# 创建可执行文件 (暂时跳过需要websocketpp的server和client)
-# add_executable(server ${SERVER_SOURCES})  # 创建服务器可执行文件
-# add_executable(client ${CLIENT_SOURCES})  # 创建客户端可执行文件
+# 创建可执行文件
+add_executable(server ${SERVER_SOURCES})  # 创建服务器可执行文件
+add_executable(client ${CLIENT_SOURCES})  # 创建客户端可执行文件
+
+# 设置包含目录
+target_include_directories(server PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${WEBSOCKETPP_INCLUDE_DIRS}
+)
+
+target_include_directories(client PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${WEBSOCKETPP_INCLUDE_DIRS}
+)
 
 # 创建基本的测试可执行文件（不包含需要OpenSSL的WebSocket测试）
 add_executable(chat_tests
@@ -78,17 +106,17 @@ if(ENABLE_MEMORY_LEAK_TEST)
 endif()
 
 # 链接必要的库
-# 服务器端链接库 (暂时跳过)
-# target_link_libraries(server
-#     PRIVATE
-#     Threads::Threads    # 线程库
-# )
+# 服务器端链接库
+target_link_libraries(server
+    PRIVATE
+    Threads::Threads    # 线程库
+)
 
-# 客户端链接库 (暂时跳过)
-# target_link_libraries(client
-#     PRIVATE
-#     Threads::Threads    # 线程库
-# )
+# 客户端链接库
+target_link_libraries(client
+    PRIVATE
+    Threads::Threads    # 线程库
+)
 
 # 测试链接库 (基本测试不需要OpenSSL)
 target_link_libraries(chat_tests

@@ -33,6 +33,7 @@
 
 # Build files
 build/
+build_asan/
 
 # CMake files
 CMakeLists.txt
@@ -45,4 +46,5 @@ Makefile
 # Cursor settings
 .cursorignore
 
-
+# VSCode 
+.vscode/

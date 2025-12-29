@@ -94,9 +94,9 @@ TEST_F(WebSocketServerTest, Broadcast) {
     auto client = std::make_unique<ChatClient>("test_user");
     
     // 设置消息回调
-    client->setMessageCallback([this](const std::string& msg) {
+    client->setMessageCallback([this](const Message& msg) {
         std::lock_guard<std::mutex> lock(messageMutex);
-        receivedMessages.push_back(Message("server", msg));
+        receivedMessages.push_back(msg);
         messageCondition.notify_one();
     });
     

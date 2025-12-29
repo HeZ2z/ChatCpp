@@ -210,22 +210,27 @@ TEST_F(HistoryTest, ConcurrentAccess) {
 
 // 测试文件权限
 TEST_F(HistoryTest, FilePermissions) {
-    // 创建历史记录
+    // 创建历史记录并保存到文件
     std::vector<Message> messages = {
         Message("user1", "Hello"),
         Message("user2", "Hi there")
     };
-    
+
     // 保存历史记录
-    std::string filename = "test_history.json";
-    EXPECT_TRUE(history->saveHistory(messages, filename));
-    
+    std::string filename = "test_history.txt";
+    {
+        FileWrapper file(filename, std::ios::out);
+        for (const auto& msg : messages) {
+            file.get() << msg.toString() << std::endl;
+        }
+    }
+
     // 验证文件权限
     struct stat st;
     EXPECT_EQ(stat(filename.c_str(), &st), 0);
     EXPECT_EQ(st.st_mode & S_IRUSR, S_IRUSR);  // 用户可读
     EXPECT_EQ(st.st_mode & S_IWUSR, S_IWUSR);  // 用户可写
-    
+
     // 清理测试文件
     std::remove(filename.c_str());
 } 

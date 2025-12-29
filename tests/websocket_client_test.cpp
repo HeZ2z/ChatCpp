@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "../src/client/websocket_client.hpp"
+#include "../src/server/websocket_server.hpp"
 #include <thread>
 #include <chrono>
 #include <atomic>
@@ -70,45 +71,39 @@ protected:
 // 测试连接
 TEST_F(WebSocketClientTest, Connection) {
     auto client = std::make_unique<ChatClient>("test_user");
-    
-    // 设置连接回调
-    client->setConnectionCallback([this](bool success) {
-        connected.store(success);
-    });
-    
+
     // 连接服务器
     std::string uri = "ws://localhost:" + std::to_string(testPort);
     client->connect(uri);
-    
+
     // 等待连接建立
-    EXPECT_TRUE(waitForConnection());
-    
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    EXPECT_TRUE(client->isConnected());
+
     // 断开连接
     client->disconnect();
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    EXPECT_FALSE(client->isConnected());
 }
 
 // 测试发送消息
 TEST_F(WebSocketClientTest, SendMessage) {
     auto client = std::make_unique<ChatClient>("test_user");
     
-    // 设置连接回调
-    client->setConnectionCallback([this](bool success) {
-        connected.store(success);
-    });
-    
     // 设置消息回调
-    client->setMessageCallback([this](const std::string& msg) {
+    client->setMessageCallback([this](const Message& msg) {
         std::lock_guard<std::mutex> lock(messageMutex);
-        receivedMessage = msg;
+        receivedMessage = msg.content;
         messageCondition.notify_one();
     });
-    
+
     // 连接服务器
     std::string uri = "ws://localhost:" + std::to_string(testPort);
     client->connect(uri);
-    
+
     // 等待连接建立
-    EXPECT_TRUE(waitForConnection());
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    EXPECT_TRUE(client->isConnected());
     
     // 发送测试消息
     std::string testMessage = "Hello, WebSocket!";
@@ -125,72 +120,60 @@ TEST_F(WebSocketClientTest, SendMessage) {
 // 测试断开连接
 TEST_F(WebSocketClientTest, Disconnection) {
     auto client = std::make_unique<ChatClient>("test_user");
-    
-    // 设置连接回调
-    client->setConnectionCallback([this](bool success) {
-        connected.store(success);
-    });
-    
+
     // 连接服务器
     std::string uri = "ws://localhost:" + std::to_string(testPort);
     client->connect(uri);
-    
+
     // 等待连接建立
-    EXPECT_TRUE(waitForConnection());
-    
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    EXPECT_TRUE(client->isConnected());
+
     // 断开连接
     client->disconnect();
-    
+
     // 等待连接状态更新
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    EXPECT_FALSE(connected.load());
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    EXPECT_FALSE(client->isConnected());
 }
 
 // 测试无效URI
 TEST_F(WebSocketClientTest, InvalidUri) {
     auto client = std::make_unique<ChatClient>("test_user");
     
-    // 设置连接回调
-    client->setConnectionCallback([this](bool success) {
-        connected.store(success);
-    });
-    
     // 尝试连接到无效地址
     client->connect("ws://invalid_host:12345");
-    
+
     // 等待连接尝试
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    EXPECT_FALSE(connected.load());
+    EXPECT_FALSE(client->isConnected());
 }
 
 // 测试重连
 TEST_F(WebSocketClientTest, Reconnection) {
     auto client = std::make_unique<ChatClient>("test_user");
     
-    // 设置连接回调
-    client->setConnectionCallback([this](bool success) {
-        connected.store(success);
-    });
-    
     // 连接服务器
     std::string uri = "ws://localhost:" + std::to_string(testPort);
     client->connect(uri);
-    
+
     // 等待连接建立
-    EXPECT_TRUE(waitForConnection());
-    
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    EXPECT_TRUE(client->isConnected());
+
     // 断开连接
     client->disconnect();
-    
+
     // 等待连接状态更新
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    EXPECT_FALSE(connected.load());
-    
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    EXPECT_FALSE(client->isConnected());
+
     // 重新连接
     client->connect(uri);
-    
+
     // 等待连接建立
-    EXPECT_TRUE(waitForConnection());
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    EXPECT_TRUE(client->isConnected());
     
     // 断开连接
     client->disconnect();
@@ -203,17 +186,12 @@ TEST_F(WebSocketClientTest, ServerNotRunning) {
     serverThread.join();
     
     auto client = std::make_unique<ChatClient>("test_user");
-    
-    // 设置连接回调
-    client->setConnectionCallback([this](bool success) {
-        connected.store(success);
-    });
-    
+
     // 尝试连接
     std::string uri = "ws://localhost:" + std::to_string(testPort);
     client->connect(uri);
-    
+
     // 等待连接尝试
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    EXPECT_FALSE(connected.load());
+    EXPECT_FALSE(client->isConnected());
 } 

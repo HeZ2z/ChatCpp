@@ -1,0 +1,60 @@
+{
+  "issue": {
+    "key": "CHATCPP-EPIC-001",
+    "summary": "Core Messaging System",
+    "description": "Implement the fundamental messaging functionality for the ChatCpp application, including message creation, serialization, storage, and basic communication protocols.",
+    "type": "Epic",
+    "status": "In Progress",
+    "priority": "Highest",
+    "assignee": "development-team",
+    "reporter": "product-owner",
+    "created": "2024-12-29T00:00:00Z",
+    "updated": "2024-12-29T23:00:00Z",
+    "labels": ["core-feature", "messaging", "backend"],
+    "components": ["Message Handler", "WebSocket Server", "Client"],
+    "epic": {
+      "name": "Core Messaging System",
+      "color": "#8777D9"
+    },
+    "acceptance_criteria": [
+      "Messages can be created with username and content",
+      "Messages can be serialized to/from string format",
+      "Messages have proper timestamp handling",
+      "Basic WebSocket communication works",
+      "Unit test coverage > 80%",
+      "Performance benchmarks met"
+    ],
+    "linked_issues": [
+      "CHATCPP-STORY-001",
+      "CHATCPP-STORY-002",
+      "CHATCPP-STORY-003",
+      "CHATCPP-TASK-001",
+      "CHATCPP-TASK-002",
+      "CHATCPP-TASK-003"
+    ],
+    "comments": [
+      {
+        "author": "product-owner",
+        "body": "This epic covers the minimum viable product features for messaging. We need to ensure reliable message delivery and proper error handling.",
+        "created": "2024-12-29T00:30:00Z"
+      },
+      {
+        "author": "tech-lead",
+        "body": "Architecture decision: Using WebSocket for real-time communication with JSON message format. OpenSSL for secure connections.",
+        "created": "2024-12-29T01:00:00Z"
+      }
+    ],
+    "attachments": [
+      {
+        "filename": "message_sequence_diagram.png",
+        "contentType": "image/png",
+        "size": 45632
+      },
+      {
+        "filename": "api_design_document.pdf",
+        "contentType": "application/pdf",
+        "size": 234567
+      }
+    ]
+  }
+}

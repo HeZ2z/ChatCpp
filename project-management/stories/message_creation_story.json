@@ -1,0 +1,52 @@
+{
+  "issue": {
+    "key": "CHATCPP-STORY-001",
+    "summary": "As a user, I want to create messages with username and content so that I can send chat messages",
+    "description": "Implement the Message class with proper constructors, getters/setters, and validation. The message should include username, content, and timestamp.",
+    "type": "Story",
+    "status": "Done",
+    "priority": "High",
+    "assignee": "developer-1",
+    "reporter": "product-owner",
+    "created": "2024-12-29T01:00:00Z",
+    "updated": "2024-12-29T15:30:00Z",
+    "labels": ["frontend", "backend", "message"],
+    "epic": "CHATCPP-EPIC-001",
+    "story_points": 3,
+    "acceptance_criteria": [
+      "Message can be created with username and content",
+      "Message has automatic timestamp generation",
+      "Message content can be updated",
+      "Username and content validation works",
+      "Unit tests cover all functionality"
+    ],
+    "subtasks": [
+      "CHATCPP-TASK-001",
+      "CHATCPP-TASK-004",
+      "CHATCPP-TASK-007"
+    ],
+    "test_cases": [
+      "CHATCPP-TC-001",
+      "CHATCPP-TC-005"
+    ],
+    "comments": [
+      {
+        "author": "developer-1",
+        "body": "Message class implemented with proper constructors and timestamp handling. Added validation for empty usernames.",
+        "created": "2024-12-29T12:00:00Z"
+      },
+      {
+        "author": "qa-engineer",
+        "body": "Unit tests pass. Ready for review.",
+        "created": "2024-12-29T14:00:00Z"
+      }
+    ],
+    "attachments": [
+      {
+        "filename": "message_class_diagram.png",
+        "contentType": "image/png",
+        "size": 23456
+      }
+    ]
+  }
+}

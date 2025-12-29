@@ -1,0 +1,129 @@
+{
+  "jira": {
+    "baseUrl": "https://your-company.atlassian.net",
+    "projectKey": "CHATCPP",
+    "projectName": "ChatCpp",
+    "issueTypes": {
+      "epic": "Epic",
+      "story": "Story",
+      "task": "Task",
+      "bug": "Bug",
+      "test": "Test",
+      "testSet": "Test Set",
+      "testExecution": "Test Execution",
+      "testPlan": "Test Plan"
+    },
+    "customFields": {
+      "storyPoints": "customfield_10016",
+      "epicName": "customfield_10011",
+      "epicLink": "customfield_10014",
+      "testType": "customfield_10017",
+      "testEnvironments": "customfield_10018",
+      "manualTestSteps": "customfield_10019"
+    },
+    "workflows": {
+      "statuses": {
+        "todo": "To Do",
+        "inProgress": "In Progress",
+        "inReview": "In Review",
+        "done": "Done"
+      },
+      "transitions": {
+        "startProgress": "Start Progress",
+        "submitForReview": "Submit for Review",
+        "approve": "Approve",
+        "reject": "Reject",
+        "close": "Close"
+      }
+    }
+  },
+  "xray": {
+    "baseUrl": "https://your-company.atlassian.net",
+    "clientId": "${XRAY_CLIENT_ID}",
+    "clientSecret": "${XRAY_CLIENT_SECRET}",
+    "projectKey": "CHATCPP",
+    "testRepository": {
+      "folders": {
+        "unitTests": "Unit Tests",
+        "integrationTests": "Integration Tests",
+        "systemTests": "System Tests",
+        "performanceTests": "Performance Tests"
+      }
+    },
+    "testTypes": {
+      "manual": "Manual",
+      "automated": "Automated[Cucumber]",
+      "generic": "Generic"
+    },
+    "testStatuses": {
+      "passed": "PASS",
+      "failed": "FAIL",
+      "blocked": "BLOCKED",
+      "skipped": "SKIP",
+      "todo": "TODO"
+    },
+    "testEnvironments": [
+      "Development",
+      "Staging",
+      "Production",
+      "CI Pipeline"
+    ],
+    "reporting": {
+      "formats": ["json", "xml", "cucumber"],
+      "automatedExecution": {
+        "enabled": true,
+        "schedule": "daily",
+        "environments": ["CI Pipeline"]
+      }
+    }
+  },
+  "integration": {
+    "enabled": true,
+    "syncDirection": "bidirectional",
+    "autoCreateTestCases": true,
+    "autoUpdateTestResults": true,
+    "testCaseMapping": {
+      "filePattern": "**/tests/**/*_test.cpp",
+      "namingConvention": "TestCaseName maps to CHATCPP-TC-XXX",
+      "automationMapping": {
+        "CreateMessage": "CHATCPP-TC-001",
+        "ToString": "CHATCPP-TC-002",
+        "FromString": "CHATCPP-TC-003",
+        "InvalidString": "CHATCPP-TC-004",
+        "TimestampUpdate": "CHATCPP-TC-005"
+      }
+    },
+    "webhooks": {
+      "testExecutionCompleted": {
+        "enabled": true,
+        "url": "https://your-ci-server.com/webhook/xray",
+        "events": ["test_execution_completed", "test_plan_updated"]
+      }
+    }
+  },
+  "reporting": {
+    "dashboard": {
+      "testExecutionTrends": true,
+      "coverageReports": true,
+      "defectTrends": true,
+      "automationProgress": true
+    },
+    "exports": {
+      "pdfReports": true,
+      "excelReports": true,
+      "apiAccess": true
+    }
+  },
+  "automation": {
+    "scripts": {
+      "testRunner": "scripts/run_tests_xray.py",
+      "reportGenerator": "scripts/generate_xray_report.py",
+      "jiraUpdater": "scripts/update_jira_issues.py"
+    },
+    "schedules": {
+      "dailyRegression": "0 2 * * *",
+      "weeklyFullTest": "0 3 * * 1",
+      "releaseValidation": "on-demand"
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "testRepository": "ChatCpp",
+  "testCases": [
+    {
+      "key": "CHATCPP-TC-001",
+      "summary": "Message Creation and Basic Properties",
+      "description": "Test that messages can be created with username and content, and have valid timestamps",
+      "type": "Manual",
+      "priority": "High",
+      "labels": ["message", "core", "unit-test"],
+      "testScript": {
+        "type": "plain",
+        "text": "1. Create a new Message object with username 'alice' and content 'Hello, World!'\n2. Verify that msg.username equals 'alice'\n3. Verify that msg.content equals 'Hello, World!'\n4. Verify that msg.timestamp is not zero"
+      },
+      "automated": true,
+      "gherkin": "Given a message is created with username and content\nWhen the message is instantiated\nThen it should have valid username, content, and timestamp"
+    },
+    {
+      "key": "CHATCPP-TC-002",
+      "summary": "Message toString Method",
+      "description": "Test that messages can be converted to string format correctly",
+      "type": "Manual",
+      "priority": "High",
+      "labels": ["message", "serialization", "unit-test"],
+      "testScript": {
+        "type": "plain",
+        "text": "1. Create a Message object with username 'bob' and content 'Test message'\n2. Call msg.toString()\n3. Verify the string contains 'bob @ Test message | '\n4. Verify the string contains a valid timestamp format"
+      },
+      "automated": true,
+      "gherkin": "Given a message object\nWhen toString is called\nThen it should return properly formatted string with timestamp"
+    },
+    {
+      "key": "CHATCPP-TC-003",
+      "summary": "Message fromString Method",
+      "description": "Test that messages can be parsed from string format correctly",
+      "type": "Manual",
+      "priority": "High",
+      "labels": ["message", "deserialization", "unit-test"],
+      "testScript": {
+        "type": "plain",
+        "text": "1. Create a string 'charlie @ Hello there | 2024-03-20 15:30:00'\n2. Call Message::fromString(input)\n3. Verify msg.username equals 'charlie'\n4. Verify msg.content equals 'Hello there'\n5. Verify timestamp matches expected time"
+      },
+      "automated": true,
+      "gherkin": "Given a properly formatted message string\nWhen fromString is called\nThen it should parse username, content, and timestamp correctly"
+    },
+    {
+      "key": "CHATCPP-TC-004",
+      "summary": "Invalid Message String Handling",
+      "description": "Test that invalid message strings throw appropriate exceptions",
+      "type": "Manual",
+      "priority": "Medium",
+      "labels": ["message", "error-handling", "unit-test"],
+      "testScript": {
+        "type": "plain",
+        "text": "1. Create an invalid input string 'invalid format'\n2. Call Message::fromString(invalid_input)\n3. Verify that std::runtime_error is thrown"
+      },
+      "automated": true,
+      "gherkin": "Given an invalid message string format\nWhen fromString is called\nThen it should throw runtime_error exception"
+    },
+    {
+      "key": "CHATCPP-TC-005",
+      "summary": "Message Timestamp Update",
+      "description": "Test that message timestamps are updated when content changes",
+      "type": "Manual",
+      "priority": "Medium",
+      "labels": ["message", "timestamp", "unit-test"],
+      "testScript": {
+        "type": "plain",
+        "text": "1. Create a Message object\n2. Record initial timestamp\n3. Wait 1 second\n4. Update message content using setContent()\n5. Verify new timestamp is greater than initial timestamp"
+      },
+      "automated": true,
+      "gherkin": "Given a message with initial timestamp\nWhen content is updated\nThen timestamp should be updated to current time"
+    }
+  ]
+}

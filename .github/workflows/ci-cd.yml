@@ -9,6 +9,9 @@ on:
     # Run daily at 2 AM UTC for regression testing
     - cron: '0 2 * * *'
 
+permissions:
+  contents: read
+
 jobs:
   build-and-test:
     runs-on: ${{ matrix.os }}
@@ -83,10 +86,13 @@ jobs:
     needs: build-and-test
     permissions:
       security-events: write
+      contents: read
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@0.29.0

@@ -3,6 +3,11 @@
 #include <chrono>
 #include <thread>
 
+// 故意制造全局内存泄漏用于测试
+#ifdef ENABLE_MEMORY_LEAK_TEST
+static int* global_leak = new int[50];
+#endif
+
 using namespace chat;
 
 class MessageTest : public ::testing::Test {
@@ -22,6 +27,14 @@ TEST_F(MessageTest, CreateMessage) {
     EXPECT_EQ(msg.username, "alice");
     EXPECT_EQ(msg.content, "Hello, World!");
     EXPECT_NE(msg.timestamp, 0);
+
+    // 故意制造内存泄漏用于测试 Valgrind 流程
+    #ifdef ENABLE_MEMORY_LEAK_TEST
+    int* leak = new int[100];
+    // 不释放内存，制造泄漏
+    // 故意泄漏指针，使 AddressSanitizer 和 Valgrind 都能检测到
+    leak = nullptr;  // 丢失原始指针
+    #endif
 }
 
 // 测试消息的toString方法
